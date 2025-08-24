@@ -10,7 +10,9 @@ export const DataProvider = ({children}) => {
   const fetchAllProducts = async () => {
     try {
       const res = await axios.get("https://fakestoreapi.in/api/products?limit=150");
+      // console.log(res)
       const productsData = res.data.products;
+      // console.log(productsData)
       setData(productsData);
     } 
     catch (error) {
@@ -18,7 +20,14 @@ export const DataProvider = ({children}) => {
     }
   }
 
-  return <DataContext.Provider value={{data,setData,fetchAllProducts}}>
+  const getUniqueCategory = (data,property) => {
+     return ["All",...new Set(data?.map(currElem => currElem[property]))];
+  }
+
+  const categoryOnlyData = getUniqueCategory(data,"category");
+  const brandOnlyData = getUniqueCategory(data,"brand");
+
+  return <DataContext.Provider value={{data,setData,fetchAllProducts,categoryOnlyData,brandOnlyData}}>
     {children}
   </DataContext.Provider>
 }
