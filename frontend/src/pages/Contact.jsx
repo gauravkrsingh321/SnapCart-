@@ -15,7 +15,7 @@ const Contact = () => {
             </div>
             <div>
               <p><strong>📍 Address:</strong> 123 Tech Lane, Kolkata, India</p>
-              <p><strong>📧 Email:</strong> support@zaptro.com</p>
+              <p><strong>📧 Email:</strong> support@SnapCart.com</p>
               <p><strong>📞 Phone:</strong> +91 98765 43210</p>
             </div>
           </div>

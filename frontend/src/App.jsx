@@ -7,12 +7,17 @@ import Contact from './pages/Contact'
 import Cart from './pages/Cart'
 import Home from './pages/Home'
 import About from './pages/About'
-import Navbar from './components/Navbar'
-import Footer from "./components/Footer"
+import SingleProduct from './pages/SingleProduct'
+import ErrorPage from './pages/ErrorPage'
+import Layout from './components/Layout'
+import CategoryProduct from './pages/CategoryProduct'
+import { useCart } from './context/CartContext'
+
 
 export default function App() {
     const [location, setLocation] = useState()
     const [openDropdown, setOpenDropdown] = useState(false)
+    const { cartItem, setCartItem } = useCart()
 
     const getLocation = async () => {
     navigator.geolocation.getCurrentPosition(async pos => {
@@ -33,17 +38,48 @@ export default function App() {
   useEffect(() => {
     getLocation()
   }, [])
+
+  
+  //Load cart from local storage on initial render
+  useEffect(() => {
+    const storedCart = localStorage.getItem('cartItem')
+    if(storedCart){
+      setCartItem(JSON.parse(storedCart))
+    }
+  }, []);
+
+  //save cart to local storage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('cartItem', JSON.stringify(cartItem))
+  }, [cartItem])
+
+
   return (
-    <>
-      <Navbar location={location} getLocation={getLocation} openDropdown={openDropdown} setOpenDropdown={setOpenDropdown} />
-      <Routes>
-        <Route path='/' element={<Home/>}></Route>
-        <Route path='/products' element={<Products/>}></Route>
-        <Route path='/about' element={<About/>}></Route>
-        <Route path='/contact' element={<Contact/>}></Route>
-        <Route path='/cart' element={<Cart/>}></Route>
+     <>
+       <Routes>
+        {/* All normal pages go inside Layout (with Navbar + Footer) */}
+        <Route
+          element={
+            <Layout
+              location={location}
+              getLocation={getLocation}
+              openDropdown={openDropdown}
+              setOpenDropdown={setOpenDropdown}
+            />
+          }
+        >
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<SingleProduct />} />
+          <Route path='/category/:category' element={<CategoryProduct />}></Route>
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/cart" element={<Cart/>}/>
+        </Route>
+
+        {/* ErrorPage outside Layout → No Navbar, No Footer */}
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
-      <Footer/>
-    </>
+     </>
   )
 }
